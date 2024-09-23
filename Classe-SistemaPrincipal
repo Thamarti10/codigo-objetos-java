@@ -1,0 +1,144 @@
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+public class SistemaPrincipal {
+    private static List<Cliente> clientes = new ArrayList<>();
+    private static List<Produto> produtos = new ArrayList<>();
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        int opcao;
+
+        do {
+            System.out.println("\n--- Sistema de Gestão ---");
+            System.out.println("1. Cadastrar Cliente");
+            System.out.println("2. Cadastrar Produto");
+            System.out.println("3. Listar Clientes");
+            System.out.println("4. Listar Produtos");
+            System.out.println("5. Realizar Venda");
+            System.out.println("6. Iniciar Chat de Atendimento");
+            System.out.println("0. Sair");
+            System.out.print("Escolha uma opção: ");
+            opcao = scanner.nextInt();
+            scanner.nextLine(); // Limpar o buffer
+
+            switch (opcao) {
+                case 1:
+                    cadastrarCliente(scanner);
+                    break;
+                case 2:
+                    cadastrarProduto(scanner);
+                    break;
+                case 3:
+                    listarClientes();
+                    break;
+                case 4:
+                    listarProdutos();
+                    break;
+                case 5:
+                    realizarVenda(scanner);
+                    break;
+                case 6:
+                    iniciarChat();
+                    break;
+                case 0:
+                    System.out.println("Encerrando o sistema...");
+                    break;
+                default:
+                    System.out.println("Opção inválida!");
+            }
+        } while (opcao != 0);
+
+        scanner.close();
+    }
+
+    private static void cadastrarCliente(Scanner scanner) {
+        System.out.print("Nome do cliente: ");
+        String nome = scanner.nextLine();
+        System.out.print("Email do cliente: ");
+        String email = scanner.nextLine();
+        System.out.print("Telefone do cliente: ");
+        String telefone = scanner.nextLine();
+        Cliente cliente = new Cliente(nome, email, telefone);
+        clientes.add(cliente);
+        System.out.println("Cliente cadastrado com sucesso!");
+    }
+
+    private static void cadastrarProduto(Scanner scanner) {
+        System.out.print("Nome do produto: ");
+        String nome = scanner.nextLine();
+        System.out.print("Preço do produto: ");
+        double preco = scanner.nextDouble();
+        System.out.print("Quantidade em estoque: ");
+        int estoque = scanner.nextInt();
+        Produto produto = new Produto(nome, preco, estoque);
+        produtos.add(produto);
+        System.out.println("Produto cadastrado com sucesso!");
+    }
+
+    private static void listarClientes() {
+        System.out.println("\n--- Lista de Clientes ---");
+        for (Cliente cliente : clientes) {
+            System.out.println(cliente);
+        }
+    }
+
+    private static void listarProdutos() {
+        System.out.println("\n--- Lista de Produtos ---");
+        for (Produto produto : produtos) {
+            System.out.println(produto);
+        }
+    }
+
+    private static void realizarVenda(Scanner scanner) {
+        System.out.print("Nome do cliente: ");
+        String nomeCliente = scanner.nextLine();
+        Cliente cliente = buscarClientePorNome(nomeCliente);
+        if (cliente == null) {
+            System.out.println("Cliente não encontrado!");
+            return;
+        }
+
+        Pedido pedido = new Pedido(cliente);
+        System.out.println("Digite o nome do produto (ou 'finalizar' para concluir):");
+
+        String nomeProduto;
+        while (!(nomeProduto = scanner.nextLine()).equalsIgnoreCase("finalizar")) {
+            Produto produto = buscarProdutoPorNome(nomeProduto);
+            if (produto != null) {
+                pedido.adicionarProduto(produto);
+                produto.vender(1); // Simula a venda de 1 unidade
+                System.out.println("Produto adicionado ao pedido.");
+            } else {
+                System.out.println("Produto não encontrado!");
+            }
+        }
+
+        System.out.println("Venda realizada com sucesso! Detalhes do pedido:");
+        pedido.listarProdutos();
+    }
+
+    private static Cliente buscarClientePorNome(String nome) {
+        for (Cliente cliente : clientes) {
+            if (cliente.getNome().equalsIgnoreCase(nome)) {
+                return cliente;
+            }
+        }
+        return null;
+    }
+
+    private static Produto buscarProdutoPorNome(String nome) {
+        for (Produto produto : produtos) {
+            if (produto.getNome().equalsIgnoreCase(nome)) {
+                return produto;
+            }
+        }
+        return null;
+    }
+
+    private static void iniciarChat() {
+        Chat chat = new Chat();
+        chat.iniciarChat();
+    }
+}
